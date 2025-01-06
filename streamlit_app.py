@@ -1,37 +1,36 @@
 import streamlit as st
 import pandas as pd
-import joblib 
-import numpy as np 
+import numpy as np
+import joblib
+import gdown
 from datetime import datetime
 
-# Dataset URL
-DATASET_PATH = "https://drive.google.com/uc?id=1JP1ZUPy7YhzU0YGDCR1y8wp8dkJo5cyX&export=download"
-
-# Model URLs
+# Paths to files
+DATASET_URL = "https://drive.google.com/uc?id=1JP1ZUPy7YhzU0YGDCR1y8wp8dkJo5cyX&export=download"
 RF_BOARDINGS_URL = "https://drive.google.com/uc?id=1gUhcvwrsU_8Jzv8t1OfjAKD-Fz-xCARX&export=download"
 RF_ALIGHTINGS_URL = "https://drive.google.com/uc?id=1--7a1UQD8WUC4vbQIreJm2tRI3o1ksK1&export=download"
 ENCODINGS_URL = "https://drive.google.com/uc?id=1-7hdto0JQvULjoPv_WwRbzAAbcOU6Jsa&export=download"
 
-# Load Dataset
-#df = pd.read_parquet(DATASET_URL)
-
-# Load Models
-#rf_boardings = joblib.load(RF_BOARDINGS_URL)
-#rf_alightings = joblib.load(RF_ALIGHTINGS_URL)
-#encodings = joblib.load(ENCODINGS_URL)
-
-# Load dataset, models, and encodings
+# Download and load resources
 @st.cache_data
 def load_data():
-    df = pd.read_parquet(DATASET_PATH)
+    dataset_path = "dataset.parquet"
+    gdown.download(DATASET_URL, dataset_path, quiet=False)
+    df = pd.read_parquet(dataset_path)
     df.columns = df.columns.str.strip().str.lower().str.replace(" ", "_").str.replace("-", "_")
     return df
 
 @st.cache_resource
 def load_models():
-    rf_boardings = joblib.load(RF_BOARDINGS_URL)
-    rf_alightings = joblib.load(RF_ALIGHTINGS_URL)
-    encodings = joblib.load(ENCODINGS_URL)
+    # Download models
+    gdown.download(RF_BOARDINGS_URL, "rf_boardings.pkl", quiet=False)
+    gdown.download(RF_ALIGHTINGS_URL, "rf_alightings.pkl", quiet=False)
+    gdown.download(ENCODINGS_URL, "encodings.pkl", quiet=False)
+
+    # Load models
+    rf_boardings = joblib.load("rf_boardings.pkl")
+    rf_alightings = joblib.load("rf_alightings.pkl")
+    encodings = joblib.load("encodings.pkl")
     return rf_boardings, rf_alightings, encodings
 
 df = load_data()

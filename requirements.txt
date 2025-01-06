@@ -1,5 +1,6 @@
-streamlit 
+streamlit
 pandas
 numpy
 joblib
+gdown
 pyarrow  # Required for reading Parquet files
